@@ -1,0 +1,17 @@
+version: '3.8'
+name: freezer-id
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: freezer-id
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+networks:
+  default:
+    external:
+      name: freezer-id-network
