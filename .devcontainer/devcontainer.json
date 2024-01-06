@@ -8,6 +8,7 @@
 		"vscode": {
 			"extensions": [
 				"ms-azuretools.vscode-docker",
+				"prisma.prisma",
 				"yunduo.color-highlight-css-color-4",
 				"yzhang.markdown-all-in-one"
 			],
