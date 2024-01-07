@@ -4,14 +4,22 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import Image from "next/image"
 
 export default function Login() {
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
 
     return (
         <div>
             <div className="dropdown dropdown-end dropdown-hover">
-                <button className="btn btn-block" tabIndex={0} >
-                    Login / Register
-                </button>
+
+                {status !== 'loading' &&
+                    <button className="btn btn-block" tabIndex={0} >
+                        Login / Register
+                    </button>
+                }
+                {status === 'loading' &&
+                    <div className="flex flex-col w-28">
+                        <div className="skeleton h-8 w-28 align-right"></div>
+                    </div>
+                }
                 <div tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-80">
                     {session &&
                         <div className="text-center">
@@ -20,7 +28,6 @@ export default function Login() {
                                 Sign Out
                             </button>
                         </div>
-
                     }
                     {!session &&
                         <button className="btn" onClick={() => signIn('google')}>
@@ -28,7 +35,6 @@ export default function Login() {
                             Login / Sign-up with Google
                         </button>
                     }
-
                 </div>
             </div>
 

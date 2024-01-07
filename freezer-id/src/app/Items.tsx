@@ -1,32 +1,55 @@
 "use client"
 
-import Login from "./Login"
 import { useSession } from "next-auth/react"
+import { useState, useEffect } from 'react'
+
+import Login from "./Login"
+
 
 export default function Items() {
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
+    const [items, setItems] = useState(null)
+    const [isLoading, setLoading] = useState(true)
 
-    const items = [
-
-    ]
+    useEffect(() => {
+        fetch('/api/items')
+            .then((res) => res.json())
+            .then((data) => {
+                setItems(data)
+                setLoading(false)
+            })
+    }, [])
 
     return (
         <div>
             {!session &&
                 <div className="hero">
                     <div className="hero-content text-center">
-                        <div className="max-w-md">
-                            <h1 className="text-4xl font-bold">Your Meals</h1>
-                            <p className="py-6">You'll be able to see your meals below once you login or sign-up to Freezer ID.</p>
-                            <Login />
-                        </div>
+                        {status === 'loading' &&
+                            <div className="max-w-md">
+                                <div className="flex flex-col gap-4 w-56">
+                                    <div className="skeleton h-12 w-48 mx-auto"></div>
+                                    <div className="skeleton h-16 w-full"></div>
+                                    <div className="skeleton h-8 w-full"></div>
+                                </div>
+                            </div>
+                        }
+                        {status !== 'loading' &&
+                            <div className="max-w-md">
+                                <h1 className="text-4xl font-bold">Your Meals</h1>
+                                <p className="py-6">You'll be able to see your meals below once you login or sign-up to Freezer ID.</p>
+                                <Login />
+                            </div>
+                        }
                     </div>
                 </div>
             }
-            {session &&
-                <div className="text-center">Items will go here!</div>
+            {session && isLoading &&
+                <div className="text-center">Loading your items!</div>
+            }
+            {session && !isLoading && items &&
+                <div className="text-center">{items}</div>
             }
         </div>
-
     )
 }
