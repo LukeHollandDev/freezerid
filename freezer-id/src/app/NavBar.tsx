@@ -1,7 +1,12 @@
+"use client"
+
 import Image from "next/image"
 import LoginModal from "./LoginModal"
+import { useSession, signIn, signOut } from "next-auth/react"
 
-export default async function NavBar() {
+export default function NavBar() {
+    const { data: session } = useSession()
+
     return (
         <div className="navbar bg-base-100 fixed z-10">
             <div className="navbar-start">
@@ -9,7 +14,12 @@ export default async function NavBar() {
                 <a className="btn btn-ghost text-xl">Freezer ID</a>
             </div>
             <div className="navbar-end">
-                <LoginModal />
+                {/* <LoginModal /> */}
+                {session ?
+                    <button onClick={() => signOut()}>Sign out</button>
+                    :
+                    <button onClick={() => signIn()}>Sign in</button>
+                }
             </div>
         </div>
     )
