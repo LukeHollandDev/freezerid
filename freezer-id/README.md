@@ -6,7 +6,7 @@ Create a `.env` file with the following contents:
 
 ```env
 # Prisma
-DATABASE_URL="postgresql://freezer-id:password@db:5432/freezer-id?schema=public"
+DATABASE_URL="postgresql://freezer-id:password@localhost:5432/freezer-id?schema=public"
 # NextAuth
 NEXTAUTH_SECRET="********"
 GOOGLE_CLIENT_ID="********"
