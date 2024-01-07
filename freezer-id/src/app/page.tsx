@@ -1,4 +1,4 @@
-import ItemsNotLoggedIn from "./ItemsNotLoggedIn"
+import Items from "./Items"
 import WelcomeHero from "./WelcomeHero"
 
 export default function Home() {
@@ -6,7 +6,7 @@ export default function Home() {
     <main>
       <WelcomeHero />
       <br />
-      <ItemsNotLoggedIn />
+      <Items />
     </main>
   )
 }
