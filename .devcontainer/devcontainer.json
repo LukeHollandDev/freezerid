@@ -20,6 +20,6 @@
 	},
 	"remoteUser": "node",
 	"runArgs": [
-		"--network=freezer-id-network"
+		"--network=host"
 	]
 }
