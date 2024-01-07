@@ -11,7 +11,7 @@ datasource db {
 
 model Item {
   id          Int       @id @default(autoincrement())
-  user_id     Int?
+  user_id     String?
   item_id     String    @db.VarChar(255)
   name        String    @db.VarChar(255)
   description String    @db.VarChar(255)
@@ -19,8 +19,7 @@ model Item {
   removed     DateTime? @db.Timestamp(6)
   modified    DateTime? @db.Timestamp(6)
   tags        Tag[]
-  User        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String?
+  User        User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Tag {

@@ -6,6 +6,10 @@ import { useSession } from "next-auth/react"
 export default function Items() {
     const { data: session } = useSession()
 
+    const items = [
+
+    ]
+
     return (
         <div>
             {!session &&
