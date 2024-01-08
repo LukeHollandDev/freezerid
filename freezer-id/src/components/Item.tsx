@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+
 interface Item {
     id: number;
     user_id: string;
@@ -12,6 +14,7 @@ interface Item {
 interface Props {
     item: Item;
     removeItem: Function;
+    updateItem: Function;
 }
 
 const convertDate = (date: Date) => {
@@ -19,6 +22,36 @@ const convertDate = (date: Date) => {
 }
 
 export default function Item(props: Props) {
+    const [editMode, setEditMode] = useState(false)
+    const [name, setName] = useState(props.item.name)
+    const [description, setDescription] = useState(props.item.description)
+    const [identifier, setIdentifier] = useState(props.item.item_id)
+    const [loading, setLoading] = useState(false)
+
+    const onSave = () => {
+        setLoading(true)
+        props.updateItem(name, description, identifier, () => setLoading(false))
+        setEditMode(false)
+    }
+
+    if (loading) {
+        return (
+            <div className="card w-96 bg-secondary-content p-4">
+                <div className="card-actions justify-end">
+                    <div className="skeleton h-5 w-5"></div>
+                </div>
+                <div className="card-body items-center text-center pb-2 pt-1">
+                    <div className="skeleton h-8 w-full"></div>
+                    <div className="skeleton h-12 w-full"></div>
+                    <div className="skeleton h-8 w-full"></div>
+                </div>
+                <div className="card-actions justify-end mb-5 mr-5">
+                    <div className="skeleton h-8 w-16"></div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="card w-96 bg-secondary-content">
             <div className="card-actions justify-end">
@@ -34,21 +67,48 @@ export default function Item(props: Props) {
                 </div>
             </div>
             <div className="card-body items-center text-center pb-2 pt-1">
-                <h2 className="card-title">{props.item.name}</h2>
-                <p>{props.item.description}</p>
+                {!editMode &&
+                    <h2 className="card-title">{props.item.name}</h2>
+                }
+                {editMode &&
+                    <input type="text" placeholder="Item name..." className="input w-full text-center font-bold text-xl" value={name} onChange={(e) => setName(e.target.value)} />
+                }
+
+                {!editMode &&
+                    <p>{props.item.description}</p>
+                }
+                {editMode &&
+                    <textarea className="textarea w-full text-center" rows={2} placeholder="Item description..." value={description as string} onChange={(e) => setDescription(e.target.value)}></textarea>
+                }
+
                 <div className="flex gap-2 flex-wrap justify-center">
-                    <div className="badge badge-secondary gap-2 p-3">
-                        <p>#</p>
-                        <p>{props.item.item_id}</p>
-                    </div>
-                    <div className="badge badge-neutral-content gap-2 p-3">
-                        <p>+</p>
-                        <p>{convertDate(props.item.added)}</p>
-                    </div>
+                    {!editMode &&
+                        <div className="badge badge-secondary gap-2 p-3">
+                            <p>#</p>
+                            <p>{props.item.item_id}</p>
+                        </div>
+                    }
+                    {editMode &&
+                        <div className='flex gap-2'>
+                            #
+                            <input type="text" placeholder="Item ID..." className="input input-xs h-7" value={identifier as string} onChange={(e) => setIdentifier(e.target.value)} />
+                        </div>
+                    }
+                    {!editMode &&
+                        <div className="badge badge-neutral-content gap-2 p-3">
+                            <p>+</p>
+                            <p>{convertDate(props.item.added)}</p>
+                        </div>
+                    }
                 </div>
             </div>
             <div className="card-actions justify-end mb-5 mr-5">
-                <button className="btn btn-sm">Edit</button>
+                {!editMode &&
+                    <button className="btn btn-sm" onClick={() => setEditMode(true)}>Edit</button>
+                }
+                {editMode &&
+                    <button className="btn btn-sm" onClick={() => onSave()}>Save</button>
+                }
             </div>
         </div >
     )

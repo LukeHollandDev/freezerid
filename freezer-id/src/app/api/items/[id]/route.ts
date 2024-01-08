@@ -17,3 +17,23 @@ export async function DELETE(
 
     return Response.json(`Delete route was called for item; ${params.id}`)
 }
+
+export async function PUT(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
+    const session = await getServerSession(authOptions)
+
+    const { name, description, identifier } = await request.json()
+
+    const item = await prisma.item.update({
+        where: { id: parseInt(params.id), AND: [{ user_id: session?.user.id }] },
+        data: {
+            item_id: identifier,
+            name: name,
+            description: description
+        }
+    })
+
+    return Response.json(item)
+}

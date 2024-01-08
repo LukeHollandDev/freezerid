@@ -31,6 +31,20 @@ export default function Items() {
             })
     }
 
+    const updateItem = (name: string, description: string, identifier: string, callback: Function, itemId: number, index: number) => {
+        const oldItem = items[index]
+        if (oldItem.name !== name || oldItem.description !== description || oldItem.item_id !== identifier) {
+            fetch(`/api/items/${itemId}`, { method: "PUT", body: JSON.stringify({ name, description, identifier }) })
+                .then((res) => res.json())
+                .then((data) => {
+                    const itemsCopy = [...items]
+                    itemsCopy[index] = data
+                    setItems(itemsCopy)
+                })
+        }
+        callback()
+    }
+
     return (
         <div>
             {!session &&
@@ -61,7 +75,12 @@ export default function Items() {
             {session && !isLoading && items && (
                 <div className="flex flex-auto flex-wrap gap-4 justify-center">
                     {items.map((item, index) => (
-                        <Item item={item} key={index} removeItem={() => removeItem(item.id, index)} />
+                        <Item
+                            item={item}
+                            key={index}
+                            removeItem={() => removeItem(item.id, index)}
+                            updateItem={(name: string, description: string, identifier: string, callback: Function) => updateItem(name, description, identifier, callback, item.id, index)}
+                        />
                     ))}
                 </div>
             )}
