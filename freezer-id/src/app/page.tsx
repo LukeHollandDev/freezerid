@@ -1,5 +1,5 @@
-import Items from "./Items"
-import WelcomeHero from "./WelcomeHero"
+import Items from "@/app/Items"
+import WelcomeHero from "@/app/WelcomeHero"
 
 export default function Home() {
   return (

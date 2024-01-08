@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useState, useEffect } from 'react'
 
-import Login from "./Login"
+import Login from "@/app/Login"
 import Item from "@/components/Item"
 
 

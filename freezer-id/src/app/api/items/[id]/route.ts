@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
-import { authOptions } from '@/app/lib/auth'
 import { getServerSession } from "next-auth/next"
+
+import { authOptions } from '@/app/lib/auth'
 
 const prisma = new PrismaClient()
 
