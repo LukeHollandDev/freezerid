@@ -4,11 +4,12 @@ import { useSession } from "next-auth/react"
 import { useState, useEffect } from 'react'
 
 import Login from "./Login"
+import Item from "@/components/Item"
 
 
 export default function Items() {
     const { data: session, status } = useSession()
-    const [items, setItems] = useState(null)
+    const [items, setItems] = useState([] as any[])
     const [isLoading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -19,6 +20,16 @@ export default function Items() {
                 setLoading(false)
             })
     }, [])
+
+    const removeItem = (itemId: number, index: number) => {
+        fetch(`/api/items/${itemId}`, { method: "DELETE" })
+            .then((res) => res.json())
+            .then((data) => {
+                const itemsCopy = [...items]
+                itemsCopy.splice(index, 1)
+                setItems(itemsCopy)
+            })
+    }
 
     return (
         <div>
@@ -47,9 +58,13 @@ export default function Items() {
             {session && isLoading &&
                 <div className="text-center">Loading your items!</div>
             }
-            {session && !isLoading && items &&
-                <div className="text-center">{items}</div>
-            }
+            {session && !isLoading && items && (
+                <div className="flex flex-auto flex-wrap gap-4 justify-center">
+                    {items.map((item, index) => (
+                        <Item item={item} key={index} removeItem={() => removeItem(item.id, index)} />
+                    ))}
+                </div>
+            )}
         </div>
     )
 }
