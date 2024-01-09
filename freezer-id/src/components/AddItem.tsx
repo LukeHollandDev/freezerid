@@ -1,6 +1,10 @@
 import { useState } from 'react'
 
-export default function AddItem() {
+interface Props {
+    callback: Function;
+}
+
+export default function AddItem(props: Props) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [identifier, setIdentifier] = useState('')
@@ -23,7 +27,9 @@ export default function AddItem() {
                 .then((res) => res.json())
                 .then((data) => {
                     (document.getElementById('item_modal') as HTMLDialogElement).close()
+                    props.callback()
                     setLoading(false)
+                    clear()
                 })
         }
     }
@@ -34,10 +40,11 @@ export default function AddItem() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v12m-6-6h12"></path>
                 </svg>
+                New
             </button>
             <dialog id="item_modal" className="modal">
-                <div className="modal-box">
-                    <label className="form-control w-full max-w-xs">
+                <div className="modal-box max-w-xs">
+                    <label className="form-control w-full">
                         <div className="label">
                             <span className="label-text">
                                 Identifier
@@ -46,7 +53,7 @@ export default function AddItem() {
                         </div>
                         <input type="text" placeholder="Type here..." className="input input-sm input-bordered w-full max-w-xs" disabled={loading} value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
                     </label>
-                    <label className="form-control w-full max-w-xs">
+                    <label className="form-control w-full">
                         <div className="label">
                             <span className="label-text">
                                 Name
@@ -55,7 +62,7 @@ export default function AddItem() {
                         </div>
                         <input type="text" placeholder="Type here..." className="input input-sm input-bordered w-full max-w-xs" disabled={loading} value={name} onChange={(e) => setName(e.target.value)} />
                     </label>
-                    <label className="form-control w-full max-w-xs">
+                    <label className="form-control w-full">
                         <div className="label">
                             <span className="label-text">
                                 Description

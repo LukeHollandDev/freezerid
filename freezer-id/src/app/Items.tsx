@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 
 import Login from "@/app/Login"
 import Item from "@/components/Item"
-
+import AddItem from "@/components/AddItem"
 
 export default function Items() {
     const { data: session, status } = useSession()
@@ -13,13 +13,17 @@ export default function Items() {
     const [isLoading, setLoading] = useState(true)
 
     useEffect(() => {
+        refreshItems()
+    }, [])
+
+    const refreshItems = () => {
         fetch('/api/items')
             .then((res) => res.json())
             .then((data) => {
                 setItems(data)
                 setLoading(false)
             })
-    }, [])
+    }
 
     const removeItem = (itemId: number, index: number) => {
         fetch(`/api/items/${itemId}`, { method: "DELETE" })
@@ -70,18 +74,24 @@ export default function Items() {
                 </div>
             }
             {session && isLoading &&
-                <div className="text-center">Loading your items!</div>
+                <div className="skeleton h-8 w-full"></div>
             }
             {session && !isLoading && items && (
-                <div className="flex flex-auto flex-wrap gap-4 justify-center">
-                    {items.map((item, index) => (
-                        <Item
-                            item={item}
-                            key={index}
-                            removeItem={() => removeItem(item.id, index)}
-                            updateItem={(name: string, description: string, identifier: string, callback: Function) => updateItem(name, description, identifier, callback, item.id, index)}
-                        />
-                    ))}
+                <div>
+                    <div className="bg-secondary-content flex flex-auto flex-wrap gap-4 justify-center p-4">
+                        <AddItem callback={() => refreshItems()} />
+                    </div>
+                    <br />
+                    <div className="flex flex-auto flex-wrap gap-4 justify-center">
+                        {items.map((item, index) => (
+                            <Item
+                                item={item}
+                                key={index}
+                                removeItem={() => removeItem(item.id, index)}
+                                updateItem={(name: string, description: string, identifier: string, callback: Function) => updateItem(name, description, identifier, callback, item.id, index)}
+                            />
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
