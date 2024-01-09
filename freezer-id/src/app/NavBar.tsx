@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react"
 import Image from "next/image"
 
 import Login from "@/app/Login"
-
+import AddItem from "@/components/AddItem"
 
 export default function NavBar() {
     const { data: session } = useSession()
@@ -15,7 +15,8 @@ export default function NavBar() {
                 <Image className="btn-ghost" src={'/logo.png'} width={50} height={50} alt="Freezer ID logo" />
                 <a className="btn btn-ghost text-xl">Freezer ID</a>
             </div>
-            <div className="navbar-end">
+            <div className="navbar-end gap-2">
+                <AddItem />
                 {session &&
                     <div className="dropdown dropdown-end">
                         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
