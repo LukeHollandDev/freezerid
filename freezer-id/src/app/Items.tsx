@@ -51,10 +51,16 @@ export default function Items() {
 
     return (
         <div>
+            {!session && status === 'loading' &&
+                <div className="bg-secondary-content flex flex-auto flex-wrap gap-4 justify-center p-4">
+                    <div className="skeleton h-8 w-1/4"></div>
+                </div>
+            }
             {!session &&
                 <div className="hero">
                     <div className="hero-content text-center">
                         {status === 'loading' &&
+
                             <div className="max-w-md">
                                 <div className="flex flex-col gap-4 w-56">
                                     <div className="skeleton h-12 w-48 mx-auto"></div>
