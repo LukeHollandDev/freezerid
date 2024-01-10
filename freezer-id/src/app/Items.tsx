@@ -6,11 +6,24 @@ import { useState, useEffect } from 'react'
 import Login from "@/app/Login"
 import Item from "@/components/Item"
 import AddItem from "@/components/AddItem"
+import SortItems from "@/components/SortItems"
+
+// a and b are items following description from @/components/Item
+const compareItems = (a: any, b: any, field: string, direction: boolean) => {
+    if (a[field] < b[field]) {
+        return direction ? -1 : 1;
+    } else if (a[field] > b[field]) {
+        return direction ? 1 : -1;
+    }
+    return 0;
+}
 
 export default function Items() {
     const { data: session, status } = useSession()
     const [items, setItems] = useState([] as any[])
     const [isLoading, setLoading] = useState(true)
+    const [sortBy, setSortBy] = useState('added')
+    const [sortDirection, setSortDirection] = useState(false)
 
     useEffect(() => {
         refreshItems()
@@ -20,6 +33,7 @@ export default function Items() {
         fetch('/api/items')
             .then((res) => res.json())
             .then((data) => {
+                data.sort((itemA: any, itemB: any) => compareItems(itemA, itemB, sortBy, sortDirection))
                 setItems(data)
                 setLoading(false)
             })
@@ -47,6 +61,14 @@ export default function Items() {
                 })
         }
         callback()
+    }
+
+    // direction true = asc, false = desc
+    const sortItems = (field: string, direction: boolean) => {
+        setSortBy(field)
+        setSortDirection(direction)
+        // const itemsCopy = [...items]
+        setItems(items.sort((itemA: any, itemB: any) => compareItems(itemA, itemB, field, direction)))
     }
 
     return (
@@ -85,6 +107,10 @@ export default function Items() {
             {session && !isLoading && items && (
                 <div>
                     <div className="bg-secondary-content flex flex-auto flex-wrap gap-4 justify-center p-4">
+                        <SortItems
+                            callback={(field: string, direction: boolean) => sortItems(field, direction)} selectedField={sortBy} sortDirection={sortDirection}
+                            switchDirectionCallback={(direction: boolean) => sortItems(sortBy, direction)}
+                        />
                         <AddItem callback={() => refreshItems()} />
                     </div>
                     <br />
