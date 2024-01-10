@@ -17,7 +17,8 @@ export default function NavBar() {
             <div className="navbar-end gap-2">
                 {session &&
                     <div className="dropdown dropdown-end">
-                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                        <div tabIndex={0} role="button" className="btn btn-ghost avatar">
+                            <span>{session.user.name}</span>
                             <div className="w-10 rounded-full">
                                 <img alt="User Profile Icon" src={session.user.image as string} />
                             </div>
