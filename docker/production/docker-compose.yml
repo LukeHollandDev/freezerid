@@ -17,7 +17,18 @@ services:
       dockerfile: ../docker/production/Dockerfile
     image: freezer-id-webapp
     ports:
-      - '3001:3000' # 3001 to differentiate to other apps on portainer
+      - '3000'
     env_file:
       - ../../stack.env
     command: sh -c "npx prisma migrate dev && npm run start"
+  nginx-proxy:
+    image: nginx
+    depends_on:
+      - webapp
+      - database
+    volumes:
+      - ./templates:/etc/nginx/templates
+    environment:
+      - FREEZER_ID_ADDR=webapp:3000
+    ports:
+      - "80:80"
