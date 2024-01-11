@@ -94,7 +94,7 @@ export default function Items() {
                         {status !== 'loading' &&
                             <div className="max-w-md">
                                 <h1 className="text-4xl font-bold">Your Meals</h1>
-                                <p className="py-6">You'll be able to see your meals below once you login or sign-up to Freezer ID.</p>
+                                <p className="py-6">You&apos;ll be able to see your meals below once you login or sign-up to Freezer ID.</p>
                                 <Login />
                             </div>
                         }

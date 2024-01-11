@@ -20,7 +20,7 @@ export default function NavBar() {
                         <div tabIndex={0} role="button" className="btn btn-ghost avatar">
                             <span>{session.user.name}</span>
                             <div className="w-10 rounded-full">
-                                <img alt="User Profile Icon" src={session.user.image as string} />
+                                <Image alt="User Profile Icon" src={session.user.image as string} height={40} width={40} />
                             </div>
                         </div>
                         <div tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">

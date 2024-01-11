@@ -1,0 +1,22 @@
+version: '3.8'
+name: freezer-id-production
+
+services:
+  freezer-id-db:
+    image: postgres
+    restart: always
+    env_file:
+      - stack.env
+    ports:
+      - "5433:5432"
+  freezer-id-webapp:
+    depends_on:
+      - freezer-id-db
+    build:
+      context: ../../freezer-id
+      dockerfile: ../docker/production/Dockerfile
+    image: freezer-id-nextjs
+    ports:
+      - '3003:3000'
+    env_file:
+      - stack.env

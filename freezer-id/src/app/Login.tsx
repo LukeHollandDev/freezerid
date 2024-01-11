@@ -23,7 +23,7 @@ export default function Login() {
                 <div tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-80">
                     {session &&
                         <div className="text-center">
-                            <p>You're currently signed in.</p>
+                            <p>You&apos;re currently signed in.</p>
                             <button className="btn" onClick={() => signOut()}>
                                 Sign Out
                             </button>
