@@ -52,4 +52,19 @@ npm run dev
 
 ## Deployment
 
-Details will be added later once a strategy is developed.
+Container is deployed to [Portainer](https://docs.portainer.io/start/install-ce/server/docker/linux) (hosted locally).
+
+The stack is created by pulling from the GitHub repository and building from the `docker/production/docker-compose.yml` file.
+
+It loads the environment variables from a file called `stack.env` which is provided by Portainer, contents of it are as below. (this is defined when creating the stack)
+
+```bash
+# Portainer stack.env contents (redacted some contents)
+POSTGRES_USER=freezer-id-db
+POSTGRES_PASSWORD=
+DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@database:5432/freezer-id?schema=public
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=https://freezer.lukeh.xyz
+GOOGLE_CLIENT_ID=
+GOOGLE_SECRET_ID=
+```
