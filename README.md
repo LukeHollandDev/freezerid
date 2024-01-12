@@ -1,5 +1,7 @@
 # Freezer ID
 
+[Freezer ID](https://freezer.lukeh.xyz/) website and development [documentation](/freezer-id/README.md).
+
 ## Overview
 
 This project aims to create a platform for managing freezer items with the following functionalities:
