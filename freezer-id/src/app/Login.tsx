@@ -11,9 +11,9 @@ export default function Login() {
             <div className="dropdown dropdown-end dropdown-hover">
 
                 {status !== 'loading' &&
-                    <button className="btn btn-block" tabIndex={0} >
+                    <div tabIndex={0} role="button" className="btn btn-block">
                         Login / Register
-                    </button>
+                    </div>
                 }
                 {status === 'loading' &&
                     <div className="flex flex-col w-28">

@@ -18,12 +18,12 @@ export default function SortItems(props: Props) {
     return (
         <div className="flex gap-1">
             <div className="dropdown">
-                <button className="btn btn-sm">
+                <div tabIndex={0} role="button" className="btn btn-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                     {props.selectedField === 'item_id' ? 'identifier' : props.selectedField}
-                </button>
+                </div>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-2" id="sortDropdown">
                     <li>
                         <a onClick={() => sort("item_id", true)} className={props.selectedField === "item_id" && props.sortDirection ? "bg-primary-content" : ""}>
