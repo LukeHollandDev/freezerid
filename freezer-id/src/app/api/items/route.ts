@@ -5,7 +5,6 @@ import { authOptions } from '@/app/lib/auth'
 
 const prisma = new PrismaClient()
 
-// TODO: make sure the 'removed' value is null
 export async function GET() {
     const session = await getServerSession(authOptions)
     if (session) {
@@ -20,7 +19,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions)
-    const { name, description, identifier } = await request.json()
+    const { name, description, identifier, shelf, servings } = await request.json()
     if (session) {
         const currentDateTime = new Date()
         const item = await prisma.item.create({
@@ -28,6 +27,8 @@ export async function POST(request: Request) {
                 name: name,
                 description: description,
                 item_id: identifier,
+                shelf: shelf,
+                servings: servings,
                 added: currentDateTime,
                 user_id: session.user.id
             }

@@ -34,7 +34,7 @@ export default function Items() {
             .then((res) => res.json())
             .then((data) => {
                 data.sort((itemA: any, itemB: any) => compareItems(itemA, itemB, sortBy, sortDirection))
-                setItems(data)
+                setItems(data.filter((item: any) => !item.removed))
                 setLoading(false)
             })
     }
@@ -49,10 +49,10 @@ export default function Items() {
             })
     }
 
-    const updateItem = (name: string, description: string, identifier: string, callback: Function, itemId: number, index: number) => {
+    const updateItem = (name: string, description: string, identifier: string, shelf: string, servings: string, callback: Function, itemId: number, index: number) => {
         const oldItem = items[index]
-        if (oldItem.name !== name || oldItem.description !== description || oldItem.item_id !== identifier) {
-            fetch(`/api/items/${itemId}`, { method: "PUT", body: JSON.stringify({ name, description, identifier }) })
+        if (oldItem.name !== name || oldItem.description !== description || oldItem.item_id !== identifier || oldItem.shelf !== shelf || oldItem.servings !== servings) {
+            fetch(`/api/items/${itemId}`, { method: "PUT", body: JSON.stringify({ name, description, identifier, shelf, servings }) })
                 .then((res) => res.json())
                 .then((data) => {
                     const itemsCopy = [...items]
@@ -122,7 +122,7 @@ export default function Items() {
                                     item={item}
                                     key={index}
                                     removeItem={() => removeItem(item.id, index)}
-                                    updateItem={(name: string, description: string, identifier: string, callback: Function) => updateItem(name, description, identifier, callback, item.id, index)}
+                                    updateItem={(name: string, description: string, identifier: string, shelf: string, servings: string, callback: Function) => updateItem(name, description, identifier, shelf, servings, callback, item.id, index)}
                                 />
                             ))
                             :

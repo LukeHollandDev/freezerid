@@ -6,6 +6,8 @@ interface Item {
     item_id: string;
     name: string;
     description: string | null;
+    servings: string | null;
+    shelf: string | null;
     added: Date;
     removed: Date | null;
     modified: Date | null;
@@ -26,11 +28,13 @@ export default function Item(props: Props) {
     const [name, setName] = useState(props.item.name)
     const [description, setDescription] = useState(props.item.description)
     const [identifier, setIdentifier] = useState(props.item.item_id)
+    const [shelf, setShelf] = useState(props.item.shelf)
+    const [servings, setServings] = useState(props.item.servings)
     const [loading, setLoading] = useState(false)
 
     const onSave = () => {
         setLoading(true)
-        props.updateItem(name, description, identifier, () => setLoading(false))
+        props.updateItem(name, description, identifier, shelf, servings, () => setLoading(false))
         setEditMode(false)
     }
 
@@ -91,13 +95,40 @@ export default function Item(props: Props) {
                     {editMode &&
                         <div className='flex gap-2'>
                             #
-                            <input type="text" placeholder="Item ID..." className="input input-xs h-7" value={identifier as string} onChange={(e) => setIdentifier(e.target.value)} />
+                            <input type="number" placeholder="Item ID..." className="input input-xs h-7" value={identifier as string} onChange={(e) => setIdentifier(e.target.value)} />
                         </div>
                     }
                     {!editMode &&
                         <div className="badge badge-neutral-content gap-2 p-3">
                             <p>+</p>
                             <p>{convertDate(props.item.added)}</p>
+                        </div>
+                    }
+                </div>
+
+                <div className="flex gap-2 flex-wrap justify-center">
+                    {!editMode &&
+                        <div className="badge badge-neutral-content gap-2 p-3">
+                            <p>Shelf</p>
+                            <p>{props.item.shelf}</p>
+                        </div>
+                    }
+                    {editMode &&
+                        <div className='flex gap-2'>
+                            Shelf
+                            <input type="number" placeholder="Shelf..." className="input input-xs h-7" value={shelf as string} onChange={(e) => setShelf(e.target.value)} />
+                        </div>
+                    }
+                    {!editMode &&
+                        <div className="badge badge-neutral-content gap-2 p-3">
+                            <p>Serves</p>
+                            <p>x{props.item.servings}</p>
+                        </div>
+                    }
+                    {editMode &&
+                        <div className='flex gap-2'>
+                            Serves
+                            <input type="number" placeholder="Serves..." className="input input-xs h-7" value={servings as string} onChange={(e) => setServings(e.target.value)} />
                         </div>
                     }
                 </div>

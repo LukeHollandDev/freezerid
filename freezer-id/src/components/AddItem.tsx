@@ -10,6 +10,8 @@ export default function AddItem(props: Props) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [identifier, setIdentifier] = useState('')
+    const [shelf, setShelf] = useState('')
+    const [servings, setServings] = useState('')
     const [error, setError] = useState(false)
     const [loading, setLoading] = useState(false)
 
@@ -17,15 +19,17 @@ export default function AddItem(props: Props) {
         setName('')
         setDescription('')
         setIdentifier('')
+        setShelf('')
+        setServings('')
         setError(false)
     }
 
     const add = () => {
-        if (name.length === 0 || description.length === 0 || identifier.length === 0) {
+        if (name.length === 0 || identifier.length === 0) {
             setError(true)
         } else {
             setLoading(true)
-            fetch(`/api/items`, { method: "POST", body: JSON.stringify({ name, description, identifier }) })
+            fetch(`/api/items`, { method: "POST", body: JSON.stringify({ name, description, identifier, shelf, servings }) })
                 .then((res) => res.json())
                 .then((data) => {
                     (document.getElementById('item_modal') as HTMLDialogElement).close()
@@ -47,15 +51,10 @@ export default function AddItem(props: Props) {
                 </button>
                 <dialog id="item_modal" className="modal">
                     <div className="modal-box max-w-xs">
-                        <label className="form-control w-full">
-                            <div className="label">
-                                <span className="label-text">
-                                    Identifier
-                                    {error && identifier.length === 0 && <span className='text-error'> required</span>}
-                                </span>
-                            </div>
-                            <input type="text" placeholder="Type here..." className="input input-sm input-bordered w-full max-w-xs" disabled={loading} value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
-                        </label>
+                        <span className='h-6 font-bold'>
+                            {name ? name : "_"}
+                            {identifier ? ` (#${identifier})` : ""}
+                        </span>
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text">
@@ -68,8 +67,34 @@ export default function AddItem(props: Props) {
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text">
+                                    Identifier #
+                                    {error && identifier.length === 0 && <span className='text-error'> required</span>}
+                                </span>
+                            </div>
+                            <input type="number" placeholder="Type here..." className="input input-sm input-bordered w-full max-w-xs" disabled={loading} value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
+                        </label>
+                        <div className='flex gap-2'>
+                            <label className="form-control w-full">
+                                <div className="label">
+                                    <span className="label-text">
+                                        Shelf #
+                                    </span>
+                                </div>
+                                <input type="number" placeholder="Type here..." className="input input-sm input-bordered w-full max-w-xs" disabled={loading} value={shelf} onChange={(e) => setShelf(e.target.value)} />
+                            </label>
+                            <label className="form-control w-full">
+                                <div className="label">
+                                    <span className="label-text">
+                                        Servings #
+                                    </span>
+                                </div>
+                                <input type="number" placeholder="Type here..." className="input input-sm input-bordered w-full max-w-xs" disabled={loading} value={servings} onChange={(e) => setServings(e.target.value)} />
+                            </label>
+                        </div>
+                        <label className="form-control w-full">
+                            <div className="label">
+                                <span className="label-text">
                                     Description
-                                    {error && description.length === 0 && <span className='text-error'> required</span>}
                                 </span>
                             </div>
                             <textarea className="textarea textarea-sm textarea-bordered w-full max-w-xs" rows={2} placeholder="Type here..." disabled={loading} value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
