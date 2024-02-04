@@ -127,7 +127,7 @@ export default function Items() {
                             ))
                             :
                             <div className="p-4 text-center">
-                                <p>You currently do not have any items, click on the "new" button to add a new item!</p>
+                                <p>You currently do not have any items, click on the &quot;new&quot; button to add a new item!</p>
                                 <br />
                                 <AddItem text={"Add new freezer item!"} center callback={() => refreshItems()} />
                             </div>
