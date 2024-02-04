@@ -82,7 +82,6 @@ export default function Items() {
                 <div className="hero">
                     <div className="hero-content text-center">
                         {status === 'loading' &&
-
                             <div className="max-w-md">
                                 <div className="flex flex-col gap-4 w-56">
                                     <div className="skeleton h-12 w-48 mx-auto"></div>
@@ -101,13 +100,15 @@ export default function Items() {
                     </div>
                 </div>
             }
+
             {session && isLoading &&
                 <div className="skeleton h-8 w-full"></div>
             }
-            {session && !isLoading && items && (
+            {session && !isLoading &&
                 <div>
                     <div className="bg-secondary-content flex flex-auto flex-wrap gap-4 justify-center p-4">
                         <SortItems
+                            disabled={items.length === 0}
                             callback={(field: string, direction: boolean) => sortItems(field, direction)} selectedField={sortBy} sortDirection={sortDirection}
                             switchDirectionCallback={(direction: boolean) => sortItems(sortBy, direction)}
                         />
@@ -115,17 +116,27 @@ export default function Items() {
                     </div>
                     <br />
                     <div className="flex flex-auto flex-wrap gap-4 justify-center">
-                        {items.map((item, index) => (
-                            <Item
-                                item={item}
-                                key={index}
-                                removeItem={() => removeItem(item.id, index)}
-                                updateItem={(name: string, description: string, identifier: string, callback: Function) => updateItem(name, description, identifier, callback, item.id, index)}
-                            />
-                        ))}
+                        {items.length > 0 ?
+                            items.map((item, index) => (
+                                <Item
+                                    item={item}
+                                    key={index}
+                                    removeItem={() => removeItem(item.id, index)}
+                                    updateItem={(name: string, description: string, identifier: string, callback: Function) => updateItem(name, description, identifier, callback, item.id, index)}
+                                />
+                            ))
+                            :
+                            <div className="p-4 text-center">
+                                <p>You currently do not have any items, click on the "new" button to add a new item!</p>
+                                <br />
+                                <AddItem text={"Add new freezer item!"} center callback={() => refreshItems()} />
+                            </div>
+                        }
                     </div>
+
+
                 </div>
-            )}
+            }
         </div>
     )
 }
