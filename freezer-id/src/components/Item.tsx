@@ -17,6 +17,7 @@ interface Props {
     item: Item;
     removeItem: Function;
     updateItem: Function;
+    restoreItem: Function;
 }
 
 const convertDate = (date: Date) => {
@@ -58,18 +59,22 @@ export default function Item(props: Props) {
 
     return (
         <div className="card w-96 bg-secondary-content">
-            <div className="card-actions justify-end">
-                <div className="dropdown dropdown-bottom dropdown-end dropdown-hover">
-                    <div tabIndex={0} role="button" className="btn btn-square btn-sm btn-ghost mt-1 mr-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </div>
-                    <div tabIndex={0} className="dropdown-content z-[1] menu shadow bg-base-100 rounded-box w-24">
-                        <button className="btn btn-sm btn-error" onClick={() => props.removeItem()}>
-                            Delete
-                        </button>
+            {!props.item.removed ?
+                <div className="card-actions justify-end">
+                    <div className="dropdown dropdown-bottom dropdown-end dropdown-hover">
+                        <div tabIndex={0} role="button" className="btn btn-square btn-sm btn-ghost mt-1 mr-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </div>
+                        <div tabIndex={0} className="dropdown-content z-[1] menu shadow bg-base-100 rounded-box w-24">
+                            <button className="btn btn-sm btn-error" onClick={() => props.removeItem()}>
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+                :
+                <br />
+            }
             <div className="card-body items-center text-center pb-2 pt-1">
                 {!editMode &&
                     <h2 className="card-title">{props.item.name}</h2>
@@ -133,14 +138,20 @@ export default function Item(props: Props) {
                     }
                 </div>
             </div>
-            <div className="card-actions justify-end mb-5 mr-5">
-                {!editMode &&
-                    <button className="btn btn-sm" onClick={() => setEditMode(true)}>Edit</button>
-                }
-                {editMode &&
-                    <button className="btn btn-sm" onClick={() => onSave()}>Save</button>
-                }
-            </div>
+            {!props.item.removed ?
+                <div className="card-actions justify-end mb-5 mr-5">
+                    {!editMode &&
+                        <button className="btn btn-sm" onClick={() => setEditMode(true)}>Edit</button>
+                    }
+                    {editMode &&
+                        <button className="btn btn-sm" onClick={() => onSave()}>Save</button>
+                    }
+                </div>
+                :
+                <div className="card-actions justify-end mb-5 mr-5">
+                    <button className="btn btn-sm" onClick={() => props.restoreItem()}>Restore Item</button>
+                </div>
+            }
         </div >
     )
 }

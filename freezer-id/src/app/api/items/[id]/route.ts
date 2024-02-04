@@ -16,13 +16,13 @@ export async function DELETE(
         //     where: { id: parseInt(params.id), AND: [{ user_id: session?.user.id }] }
         // })
         const currentDateTime = new Date()
-        await prisma.item.update({
+        const item = await prisma.item.update({
             where: { id: parseInt(params.id), AND: [{ user_id: session?.user.id }] },
             data: {
                 removed: currentDateTime
             }
         })
-        return Response.json(`Successfully deleted item with id; ${params.id}`)
+        return Response.json(item)
     } else {
         return Response.json(`Unable to delete item with id; ${params.id}`)
     }
