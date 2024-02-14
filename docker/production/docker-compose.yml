@@ -18,6 +18,7 @@ services:
       context: ../../freezer-id
       dockerfile: ../docker/production/Dockerfile
     image: freezer-id-webapp
+    restart: always
     ports:
       - '3001:3000'
     env_file:
