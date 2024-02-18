@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Image from "next/image"
 
 interface Item {
     id: number;
@@ -11,6 +12,8 @@ interface Item {
     added: Date;
     removed: Date | null;
     modified: Date | null;
+    shared: boolean | null;
+    sharer: any;
 }
 
 interface Props {
@@ -84,7 +87,7 @@ export default function Item(props: Props) {
                 }
 
                 {!editMode &&
-                    <p>{props.item.description}</p>
+                    <span>{props.item.description}</span>
                 }
                 {editMode &&
                     <textarea className="textarea w-full text-center" rows={2} placeholder="Item description..." value={description as string} onChange={(e) => setDescription(e.target.value)}></textarea>
@@ -111,35 +114,48 @@ export default function Item(props: Props) {
                     }
                 </div>
 
-                <div className="flex gap-2 flex-wrap justify-center">
-                    {!editMode && props.item.shelf &&
-                        <div className="badge badge-neutral-content gap-2 p-3">
-                            <p>Shelf</p>
-                            <p>{props.item.shelf}</p>
-                        </div>
-                    }
-                    {editMode &&
-                        <div className='flex gap-2'>
-                            Shelf
-                            <input type="number" placeholder="Shelf..." className="input input-xs h-7" value={shelf as string} onChange={(e) => setShelf(e.target.value)} />
-                        </div>
-                    }
-                    {!editMode && props.item.servings &&
-                        <div className="badge badge-neutral-content gap-2 p-3">
-                            <p>Serves</p>
-                            <p>x{props.item.servings}</p>
-                        </div>
-                    }
-                    {editMode &&
-                        <div className='flex gap-2'>
-                            Serves
-                            <input type="number" placeholder="Serves..." className="input input-xs h-7" value={servings as string} onChange={(e) => setServings(e.target.value)} />
-                        </div>
-                    }
-                </div>
+                {editMode || props.item.shelf || props.item.servings ?
+                    <div className="flex gap-2 flex-wrap justify-center">
+                        {!editMode && props.item.shelf &&
+                            <div className="badge badge-neutral-content gap-2 p-3">
+                                <p>Shelf</p>
+                                <p>{props.item.shelf}</p>
+                            </div>
+                        }
+                        {editMode &&
+                            <div className='flex gap-2'>
+                                Shelf
+                                <input type="number" placeholder="Shelf..." className="input input-xs h-7" value={shelf as string} onChange={(e) => setShelf(e.target.value)} />
+                            </div>
+                        }
+                        {!editMode && props.item.servings &&
+                            <div className="badge badge-neutral-content gap-2 p-3">
+                                <p>Serves</p>
+                                <p>x{props.item.servings}</p>
+                            </div>
+                        }
+                        {editMode &&
+                            <div className='flex gap-2'>
+                                Serves
+                                <input type="number" placeholder="Serves..." className="input input-xs h-7" value={servings as string} onChange={(e) => setServings(e.target.value)} />
+                            </div>
+                        }
+                    </div>
+                    :
+                    null
+                }
             </div>
+
             {!props.item.removed ?
                 <div className="card-actions justify-end mb-5 mr-5">
+                    {props.item.shared ?
+                        <button className="btn btn-sm btn-ghost">
+                            <Image alt="User Profile Icon" className='rounded-full' src={props.item.sharer.image as string} height={25} width={25} />
+                            {props.item.sharer.name}
+                        </button>
+                        :
+                        null
+                    }
                     {!editMode &&
                         <button className="btn btn-sm" onClick={() => setEditMode(true)}>Edit</button>
                     }

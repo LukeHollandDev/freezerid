@@ -11,7 +11,20 @@ export async function GET() {
         const items = await prisma.item.findMany({
             where: { user_id: session.user.id }
         })
-        return Response.json(items)
+        // logic to get shared items
+        let otherItems: any = []
+        const usersSharing = await prisma.shared.findMany({ where: { receiver_id: session.user.id }, distinct: ['sharer_id'] })
+        for (let i = 0; i < usersSharing.length; i++) {
+            const shared = usersSharing[i]
+            let sharedItems = await prisma.item.findMany({
+                where: { user_id: shared.sharer_id }
+            })
+            const sharer = await prisma.user.findFirst({ where: { id: shared.sharer_id } })
+            sharedItems.forEach((item: any) => { item.shared = true; item.sharer = sharer })
+            otherItems = [...sharedItems]
+        }
+
+        return Response.json([...items, ...otherItems])
     } else {
         return Response.json([])
     }
