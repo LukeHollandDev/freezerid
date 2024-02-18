@@ -112,7 +112,7 @@ export default function Item(props: Props) {
                 </div>
 
                 <div className="flex gap-2 flex-wrap justify-center">
-                    {!editMode &&
+                    {!editMode && props.item.shelf &&
                         <div className="badge badge-neutral-content gap-2 p-3">
                             <p>Shelf</p>
                             <p>{props.item.shelf}</p>
@@ -124,7 +124,7 @@ export default function Item(props: Props) {
                             <input type="number" placeholder="Shelf..." className="input input-xs h-7" value={shelf as string} onChange={(e) => setShelf(e.target.value)} />
                         </div>
                     }
-                    {!editMode &&
+                    {!editMode && props.item.servings &&
                         <div className="badge badge-neutral-content gap-2 p-3">
                             <p>Serves</p>
                             <p>x{props.item.servings}</p>
