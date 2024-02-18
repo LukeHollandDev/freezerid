@@ -30,6 +30,13 @@ model Tag {
   items Item[]
 }
 
+model Shared {
+  id          Int    @id @default(autoincrement())
+  sharer_id   String
+  receiver_id String
+  User        User?  @relation(fields: [sharer_id], references: [id])
+}
+
 // NextAuth models
 
 model Account {
@@ -68,6 +75,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   items         Item[]
+  shared        Shared[]
 }
 
 model VerificationToken {
