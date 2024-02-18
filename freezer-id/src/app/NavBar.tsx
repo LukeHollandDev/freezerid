@@ -76,7 +76,7 @@ export default function NavBar() {
                                     <div className="modal-box max-w-md">
                                         <span className="text-xl font-bold">Share your items!</span>
                                         <br />
-                                        <span>Enter the email of the user you'd like to share your freezer items with. They will be able to view all of your freezer items.</span>
+                                        <span>Enter the email of the user you&apos;d like to share your freezer items with. They will be able to view all of your freezer items.</span>
                                         <label className="form-control w-full">
                                             <div className="label">
                                                 <span className="label-text">
