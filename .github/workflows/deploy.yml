@@ -5,6 +5,15 @@ on:
         branches:
             - develop
 
+env:
+    POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+    POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@database:5432/freezer-id?schema=public
+    NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+    GOOGLE_SECRET_ID: ${{ secrets.GOOGLE_SECRET_ID }}
+    NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
@@ -35,7 +44,7 @@ jobs:
               uses: docker/build-push-action@v5
               with:
                   context: ./freezer-id
-                  file: ./docker/Dockerfile
+                  file: ./docker/production/Dockerfile
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
