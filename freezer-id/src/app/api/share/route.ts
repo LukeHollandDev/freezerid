@@ -19,6 +19,10 @@ export async function POST(request: Request) {
         }
         const receiver_id = receiver.id
 
+        if (receiver_id === sharer_id) {
+            return Response.json({message: "You cannot share with yourself.", email}, {status: 400})
+        }
+
         const existingShared = await prisma.shared.findFirst({where: {sharer_id: sharer_id, receiver_id: receiver_id}})
 
         if (existingShared) {

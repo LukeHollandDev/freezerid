@@ -32,6 +32,11 @@ export default function NavBar() {
                     setSuccess(false)
                     return;
                 }
+                if (res.status === 400) {
+                    setError("You cannot share your items with yourself.")
+                    setSuccess(false)
+                    return;
+                }
                 return res.json();
             })
             .then((data) => {

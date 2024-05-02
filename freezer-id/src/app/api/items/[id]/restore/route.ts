@@ -12,8 +12,13 @@ export async function PUT(
     const session = await getServerSession(authOptions)
     if (session) {
         const currentDateTime = new Date()
+        const usersSharing = await prisma.shared.findMany({
+            where: {receiver_id: session.user.id},
+            distinct: ['sharer_id']
+        })
+        const sharedUserIds = usersSharing.map((item: any) => item.sharer_id)
         const item = await prisma.item.update({
-            where: {id: parseInt(params.id), AND: [{user_id: session?.user.id}]},
+            where: {id: parseInt(params.id), AND: [{user_id: {in: [session?.user.id, ...sharedUserIds]}}]},
             data: {
                 modified: currentDateTime,
                 removed: null
