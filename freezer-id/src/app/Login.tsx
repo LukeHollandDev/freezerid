@@ -1,10 +1,10 @@
 "use client"
 
-import { useSession, signIn, signOut } from "next-auth/react"
+import {useSession, signIn, signOut} from "next-auth/react"
 import Image from "next/image"
 
 export default function Login() {
-    const { data: session, status } = useSession()
+    const {data: session, status} = useSession()
 
     return (
         <div>
@@ -31,7 +31,8 @@ export default function Login() {
                     }
                     {!session &&
                         <button className="btn" onClick={() => signIn('google')}>
-                            <Image src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" width={24} height={24} alt="Google G Logo" />
+                            <Image src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" width={24}
+                                   height={24} alt="Google G Logo"/>
                             Login / Sign-up with Google
                         </button>
                     }

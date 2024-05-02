@@ -1,13 +1,13 @@
 "use client"
 
-import { useSession, signOut } from "next-auth/react"
+import {useSession, signOut} from "next-auth/react"
 import Image from "next/image"
 
 import Login from "@/app/Login"
-import { useState } from "react"
+import {useState} from "react"
 
 export default function NavBar() {
-    const { data: session } = useSession()
+    const {data: session} = useSession()
     const [email, setEmail] = useState('')
     const [error, setError] = useState('')
     const [success, setSuccess] = useState(false)
@@ -20,7 +20,7 @@ export default function NavBar() {
             return;
         }
 
-        fetch(`/api/share`, { method: "POST", body: JSON.stringify({ email }) })
+        fetch(`/api/share`, {method: "POST", body: JSON.stringify({email})})
             .then((res) => {
                 if (res.status === 404) {
                     setError("Email not in use, could not find user with that email.");
@@ -55,7 +55,7 @@ export default function NavBar() {
     return (
         <div className="navbar bg-base-100 fixed z-10">
             <div className="navbar-start">
-                <Image src={'/logo.png'} width={50} height={50} alt="Freezer ID logo" />
+                <Image src={'/logo.png'} width={50} height={50} alt="Freezer ID logo"/>
                 <a className="btn btn-ghost text-xl">Freezer ID</a>
             </div>
             <div className="navbar-end gap-2">
@@ -64,18 +64,21 @@ export default function NavBar() {
                         <div tabIndex={0} role="button" className="btn btn-ghost avatar">
                             <span>{session.user.name}</span>
                             <div className="w-10 rounded-full">
-                                <Image alt="User Profile Icon" src={session.user.image as string} height={40} width={40} />
+                                <Image alt="User Profile Icon" src={session.user.image as string} height={40}
+                                       width={40}/>
                             </div>
                         </div>
-                        <div tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+                        <div tabIndex={0}
+                             className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
                             <div className="inline-block">
-                                <button className="btn w-full" onClick={() => (document.getElementById('share_modal') as HTMLDialogElement).showModal()}>
+                                <button className="btn w-full"
+                                        onClick={() => (document.getElementById('share_modal') as HTMLDialogElement).showModal()}>
                                     Share Items
                                 </button>
                                 <dialog id="share_modal" className="modal">
                                     <div className="modal-box max-w-md">
                                         <span className="text-xl font-bold">Share your items!</span>
-                                        <br />
+                                        <br/>
                                         <span>Enter the email of the user you&apos;d like to share your freezer items with. They will be able to view all of your freezer items.</span>
                                         <label className="form-control w-full">
                                             <div className="label">
@@ -83,26 +86,31 @@ export default function NavBar() {
                                                     Email Address
                                                 </span>
                                             </div>
-                                            <input type="text" placeholder="Type here..." className="input input-sm input-bordered w-full max-w-md" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                            <input type="text" placeholder="Type here..."
+                                                   className="input input-sm input-bordered w-full max-w-md"
+                                                   value={email} onChange={(e) => setEmail(e.target.value)}/>
                                         </label>
                                         {error ?
                                             <p>
-                                                <br />
+                                                <br/>
                                                 <span className='font-bold text-error'>{error}</span>
                                             </p>
                                             : null
                                         }
                                         {success ?
                                             <p>
-                                                <br />
-                                                <span className='font-bold text-success'>Successfully shared your items!</span>
+                                                <br/>
+                                                <span
+                                                    className='font-bold text-success'>Successfully shared your items!</span>
                                             </p>
                                             : null
                                         }
                                         <div className="modal-action">
                                             <form method="dialog">
                                                 <button className="btn" onClick={() => clear()}>Cancel</button>
-                                                <div role="button" className="btn bg-primary-content" onClick={() => shareItems()}>Add</div>
+                                                <div role="button" className="btn bg-primary-content"
+                                                     onClick={() => shareItems()}>Add
+                                                </div>
                                             </form>
                                         </div>
                                     </div>
@@ -115,7 +123,7 @@ export default function NavBar() {
                     </div>
                 }
                 {!session &&
-                    <Login />
+                    <Login/>
                 }
             </div>
         </div>

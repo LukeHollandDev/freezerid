@@ -1,7 +1,7 @@
 "use client"
 
-import { useSession } from "next-auth/react"
-import { useState, useEffect } from 'react'
+import {useSession} from "next-auth/react"
+import {useState, useEffect} from 'react'
 
 import Login from "@/app/Login"
 import Item from "@/components/Item"
@@ -19,7 +19,7 @@ const compareItems = (a: any, b: any, field: string, direction: boolean) => {
 }
 
 export default function Items() {
-    const { data: session, status } = useSession()
+    const {data: session, status} = useSession()
     const [items, setItems] = useState([] as any[])
     const [deletedItems, setDeletedItems] = useState([] as any[])
     const [showDeleted, setShowDeleted] = useState(false)
@@ -43,7 +43,7 @@ export default function Items() {
     }
 
     const removeItem = (itemId: number, index: number) => {
-        fetch(`/api/items/${itemId}`, { method: "DELETE" })
+        fetch(`/api/items/${itemId}`, {method: "DELETE"})
             .then((res) => res.json())
             .then((data) => {
                 const itemsCopy = [...items]
@@ -55,7 +55,7 @@ export default function Items() {
     }
 
     const restoreItem = (itemId: number, index: number) => {
-        fetch(`/api/items/${itemId}/restore`, { method: "PUT" })
+        fetch(`/api/items/${itemId}/restore`, {method: "PUT"})
             .then((res) => res.json())
             .then((data) => {
                 const itemsCopy = [...items, data]
@@ -69,7 +69,10 @@ export default function Items() {
     const updateItem = (name: string, description: string, identifier: string, shelf: string, servings: string, callback: Function, itemId: number, index: number) => {
         const oldItem = items[index]
         if (oldItem.name !== name || oldItem.description !== description || oldItem.item_id !== identifier || oldItem.shelf !== shelf || oldItem.servings !== servings) {
-            fetch(`/api/items/${itemId}`, { method: "PUT", body: JSON.stringify({ name, description, identifier, shelf, servings }) })
+            fetch(`/api/items/${itemId}`, {
+                method: "PUT",
+                body: JSON.stringify({name, description, identifier, shelf, servings})
+            })
                 .then((res) => res.json())
                 .then((data) => {
                     const itemsCopy = [...items]
@@ -110,8 +113,9 @@ export default function Items() {
                         {status !== 'loading' &&
                             <div className="max-w-md">
                                 <h1 className="text-4xl font-bold">Your Meals</h1>
-                                <p className="py-6">You&apos;ll be able to see your meals below once you login or sign-up to Freezer ID.</p>
-                                <Login />
+                                <p className="py-6">You&apos;ll be able to see your meals below once you login or
+                                    sign-up to Freezer ID.</p>
+                                <Login/>
                             </div>
                         }
                     </div>
@@ -126,10 +130,11 @@ export default function Items() {
                     <div className="bg-secondary-content flex flex-auto flex-wrap gap-4 justify-center p-4">
                         <SortItems
                             disabled={items.length === 0}
-                            callback={(field: string, direction: boolean) => sortItems(field, direction)} selectedField={sortBy} sortDirection={sortDirection}
+                            callback={(field: string, direction: boolean) => sortItems(field, direction)}
+                            selectedField={sortBy} sortDirection={sortDirection}
                             switchDirectionCallback={(direction: boolean) => sortItems(sortBy, direction)}
                         />
-                        <AddItem callback={() => refreshItems()} />
+                        <AddItem callback={() => refreshItems()}/>
                         {!showDeleted ?
                             <button className="btn btn-sm" onClick={() => setShowDeleted(true)}>
                                 Show Deleted
@@ -140,7 +145,7 @@ export default function Items() {
                             </button>
                         }
                     </div>
-                    <br />
+                    <br/>
                     <div className="flex flex-auto flex-wrap gap-4 justify-center">
                         {!showDeleted ?
                             items.length > 0 ?
@@ -155,9 +160,10 @@ export default function Items() {
                                 ))
                                 :
                                 <div className="p-4 text-center">
-                                    <p>You currently do not have any items, click on the &quot;new&quot; button to add a new item!</p>
-                                    <br />
-                                    <AddItem text={"Add new freezer item!"} center callback={() => refreshItems()} />
+                                    <p>You currently do not have any items, click on the &quot;new&quot; button to add a
+                                        new item!</p>
+                                    <br/>
+                                    <AddItem text={"Add new freezer item!"} center callback={() => refreshItems()}/>
                                 </div>
                             :
                             deletedItems.length > 0 ?
