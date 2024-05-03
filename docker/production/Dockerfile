@@ -22,6 +22,8 @@ ENV GOOGLE_SECRET_ID ${GOOGLE_SECRET_ID}
 
 ARG VIRTUAL_HOST
 ENV VIRTUAL_HOST ${VIRTUAL_HOST}
+# same domain as the virtual host
+ENV LETSENCRYPT_HOST ${VIRTUAL_HOST}
 
 # set the container working dir
 WORKDIR /app
