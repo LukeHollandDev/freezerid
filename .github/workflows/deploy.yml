@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
     push:
         branches:
-            - develop
+            - main
 
 env:
     POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -22,7 +22,7 @@ jobs:
         permissions:
             contents: read
             packages: write
-        
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
