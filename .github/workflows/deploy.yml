@@ -13,6 +13,7 @@ env:
     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
     GOOGLE_SECRET_ID: ${{ secrets.GOOGLE_SECRET_ID }}
     NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+    VIRTUAL_HOST: freezer.lukeholland.dev
 
 jobs:
     build-and-push:
@@ -21,7 +22,7 @@ jobs:
         permissions:
             contents: read
             packages: write
-
+        
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
