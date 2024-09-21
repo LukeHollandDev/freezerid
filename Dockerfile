@@ -26,3 +26,5 @@ USER nextjs
 
 # expose the port 3000
 EXPOSE 3000
+
+CMD ["sh", "-c", "npx prisma migrate dev && npm run start"]
