@@ -1,60 +1,116 @@
-name: Build and Push Docker Image
+# deploys to VPS when pushed to main branch
+name: Deploy
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
 env:
-    POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-    POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-    DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@database:5432/freezer-id?schema=public
-    NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-    GOOGLE_SECRET_ID: ${{ secrets.GOOGLE_SECRET_ID }}
-    NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-    VIRTUAL_HOST: freezer.lukeholland.dev
+  # ssh related
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+  SSH_HOST: ${{ vars.SSH_HOST }}
+  # application related
+  POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+  POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_SECRET_ID: ${{ secrets.GOOGLE_SECRET_ID }}
+  NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
+  VIRTUAL_HOST: ${{ vars.VIRTUAL_HOST }}
+  LETSENCRYPT_HOST: ${{ vars.VIRTUAL_HOST }}
+  # docker related
+  REGISTRY: ghcr.io
 
 jobs:
-    build-and-push:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        permissions:
-            contents: read
-            packages: write
+      - name: Versioning
+        run: |
+          export IMAGE_VERSION=v$(date +'%Y-%m-%d_%H-%M-%S')
+          echo "IMAGE_VERSION=$IMAGE_VERSION" | tee $GITHUB_ENV version.env
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Login to GitHub Container Registry
-              uses: docker/login-action@v3
-              with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: ${{ env.IMAGE_VERSION }}
 
-            - name: Extract metadata (tags, labels) for Docker
-              id: meta
-              uses: docker/metadata-action@v5
-              with:
-                  images: ghcr.io/${{ github.repository }}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-            - name: Build and push Docker image
-              id: push
-              uses: docker/build-push-action@v5
-              with:
-                  context: ./freezer-id
-                  file: ./docker/production/Dockerfile
-                  push: true
-                  tags: ${{ steps.meta.outputs.tags }}
-                  labels: ${{ steps.meta.outputs.labels }}
-                  build-args: |
-                    "POSTGRES_USER=${{ secrets.POSTGRES_USER }}"
-                    "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}"
-                    "DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@database:5432/freezer-id?schema=public"
-                    "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}"
-                    "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}"
-                    "GOOGLE_SECRET_ID=${{ secrets.GOOGLE_SECRET_ID }}"
-                    "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}"
-                    "VIRTUAL_HOST=freezer.lukeholland.dev"
+      - name: Upload version.env
+        uses: actions/upload-artifact@v4
+        with:
+          name: version
+          path: version.env
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download version.env
+        uses: actions/download-artifact@v4
+        with:
+          name: version
+          path: .
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Store environment variables
+        run: |
+          echo POSTGRES_DB=${{ env.POSTGRES_DB }} >> deploy.env
+          echo POSTGRES_USER=${{ env.POSTGRES_USER }} >> deploy.env
+          echo POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} >> deploy.env
+          echo NEXTAUTH_SECRET=${{ env.NEXTAUTH_SECRET }} >> deploy.env
+          echo GOOGLE_CLIENT_ID=${{ env.GOOGLE_CLIENT_ID }} >> deploy.env
+          echo GOOGLE_SECRET_ID=${{ env.GOOGLE_SECRET_ID }} >> deploy.env
+          echo NEXTAUTH_URL=${{ env.NEXTAUTH_URL }} >> deploy.env
+          echo VIRTUAL_HOST=${{ env.VIRTUAL_HOST }} >> deploy.env
+          echo LETSENCRYPT_HOST=${{ env.LETSENCRYPT_HOST }} >> deploy.env
+          source version.env
+          echo IMAGE_URL=$(echo "${{ env.REGISTRY }}/${{ github.repository }}:$IMAGE_VERSION" | tr '[:upper:]' '[:lower:]') >> deploy.env
+
+      - name: Deploy application
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} 'mkdir -p freezer-id-backend'
+          scp -o StrictHostKeyChecking=no docker-compose.yml deploy.env ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }}:~/freezer-id-backend/
+          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} '
+            docker compose --env-file ~/freezer-id-backend/deploy.env -f ~/freezer-id-backend/docker-compose.yml up -d &&
+            if ! docker network inspect freezer-id-backend | grep -q nginx-proxy; then
+              docker network connect freezer-id-backend nginx-proxy
+            else
+              echo "nginx-proxy is already part of the freezer-id-backend network"
+            fi
+          '

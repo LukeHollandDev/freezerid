@@ -1,0 +1,54 @@
+name: freezer-id-backend
+
+services:
+  freezer-id-api:
+    image: ${IMAGE_URL}
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@freezer-id-db:5432/${POSTGRES_DB}?schema=public
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_SECRET_ID=${GOOGLE_SECRET_ID}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
+    restart: always
+    depends_on:
+      freezer-id-db:
+        condition: service_healthy
+
+  freezer-id-db:
+    image: postgres:16.4-alpine
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - type: volume
+        source: all_database_data
+        target: /var/lib/postgresql/data
+        volume:
+          subpath: freezer-id-pgdata
+    restart: always
+    healthcheck:
+      test: "pg_isready -U ${POSTGRES_USER} -h freezer-id-db -p 5432"
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    depends_on:
+      - create_volume_subpath
+
+  # used to just create the "freezer-id-pgdata" directory in volume
+  create_volume_subpath:
+    image: alpine:latest
+    command: mkdir -p /mount/freezer-id-pgdata
+    volumes:
+      - all_database_data:/mount
+
+# volume is assumed to exist on server
+volumes:
+  all_database_data:
+    external: true
+
+networks:
+  default:
+    name: freezer-id-backend
