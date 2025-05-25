@@ -19,8 +19,6 @@ env:
   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
   GOOGLE_SECRET_ID: ${{ secrets.GOOGLE_SECRET_ID }}
   NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
-  VIRTUAL_HOST: ${{ vars.VIRTUAL_HOST }}
-  LETSENCRYPT_HOST: ${{ vars.VIRTUAL_HOST }}
   # docker related
   REGISTRY: ghcr.io
 
@@ -97,20 +95,17 @@ jobs:
           echo GOOGLE_CLIENT_ID=${{ env.GOOGLE_CLIENT_ID }} >> deploy.env
           echo GOOGLE_SECRET_ID=${{ env.GOOGLE_SECRET_ID }} >> deploy.env
           echo NEXTAUTH_URL=${{ env.NEXTAUTH_URL }} >> deploy.env
-          echo VIRTUAL_HOST=${{ env.VIRTUAL_HOST }} >> deploy.env
-          echo LETSENCRYPT_HOST=${{ env.LETSENCRYPT_HOST }} >> deploy.env
           source version.env
           echo IMAGE_URL=$(echo "${{ env.REGISTRY }}/${{ github.repository }}:$IMAGE_VERSION" | tr '[:upper:]' '[:lower:]') >> deploy.env
 
       - name: Deploy application
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} 'mkdir -p freezer-id-backend'
-          scp -o StrictHostKeyChecking=no docker-compose.yml deploy.env ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }}:~/freezer-id-backend/
+          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} 'mkdir -p freezer-id'
+          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} 'mkdir -p /srv/freezer-id'
+          scp -o StrictHostKeyChecking=no docker-compose.yml deploy.env ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }}:~/freezer-id/
           ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} '
-            docker compose --env-file ~/freezer-id-backend/deploy.env -f ~/freezer-id-backend/docker-compose.yml up -d &&
-            if ! docker network inspect freezer-id-backend | grep -q nginx-proxy; then
-              docker network connect freezer-id-backend nginx-proxy
-            else
-              echo "nginx-proxy is already part of the freezer-id-backend network"
+            docker compose --env-file ~/freezer-id/deploy.env -f ~/freezer-id/docker-compose.yml up -d &&
+            if ! docker network inspect nginx-proxy-manager | grep -q freezer-id-api-1; then
+              docker network connect nginx-proxy-manager freezer-id-api-1
             fi
           '
