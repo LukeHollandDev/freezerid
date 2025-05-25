@@ -22,8 +22,8 @@ RUN npm run build
 ENV NODE_ENV=production
 
 # setup nextjs user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
+RUN addgroup --gid 1001 nodejs && \
+    adduser --uid 1001 --disabled-password --gecos "" --ingroup nodejs nextjs
 RUN chown -R nextjs:nodejs /app
 USER nextjs
 
