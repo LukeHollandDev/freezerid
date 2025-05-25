@@ -100,9 +100,12 @@ jobs:
 
       - name: Deploy application
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} 'mkdir -p freezer-id'
-          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} 'mkdir -p /srv/freezer-id'
+          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} 'mkdir -p freezer-id /srv/freezer-id'
           scp -o StrictHostKeyChecking=no docker-compose.yml deploy.env ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }}:~/freezer-id/
+          ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} '
+            echo "UID=$(id -u)" >> ~/freezer-id/deploy.env &&
+            echo "GID=$(id -g)" >> ~/freezer-id/deploy.env
+          '
           ssh -o StrictHostKeyChecking=no ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} '
             docker compose --env-file ~/freezer-id/deploy.env -f ~/freezer-id/docker-compose.yml up -d &&
             if ! docker network inspect nginx-proxy-manager | grep -q freezer-id-api-1; then

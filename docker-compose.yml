@@ -17,6 +17,7 @@ services:
   db:
     image: postgres:16.4-alpine
     restart: unless-stopped
+    user: "${UID}:${GID}"
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
