@@ -1,10 +1,13 @@
-FROM node:18-alpine AS base
+FROM node:18-slim AS base
 
 # set the container working dir
 WORKDIR /app
 
 # copy all files
 COPY ./freezer-id .
+
+# update and install openssl
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # install dependencies
 RUN npm ci
